@@ -1,7 +1,7 @@
 {
-  "name": "wrp-test-backend",
+  "name": "agent-nodejs",
   "version": "1.0.0",
-  "description": "Test",
+  "description": "ngrok sample nodejs agent",
   "main": "index.js",
   "scripts": {
     "start": "NODE_ENV=development nodemon server.js",
@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@ngrok/ngrok": "^1.2.0",
     "app-root-path": "^3.1.0",
     "axios": "^1.6.7",
     "compression": "^1.7.4",

@@ -61,7 +61,7 @@ exports.updateEndPointStatus = catchAsync(async (req, res, next) => {
     return next(new AppError("Agent endpoint not found", 404));
   }
 
-  let endpointResponse = endpointManager.changeEndpointsStatus(id);
+  let endpointResponse = await endpointManager.changeEndpointsStatus(id);
 
   if (!endpointResponse.success) {
     return next(new AppError("Agent endpoint not updated", 404));

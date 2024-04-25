@@ -1,7 +1,7 @@
 {
   "name": "ngrok-agent-portal-backend",
   "version": "1.0.0",
-  "description": "Test",
+  "description": "ngrok agent portal backend",
   "main": "index.js",
   "scripts": {
     "start": "nodemon server.js",
