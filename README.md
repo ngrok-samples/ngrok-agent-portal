@@ -1,70 +1,97 @@
-# Getting Started with Create React App
+# Getting Started with ngrok agent portal
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This portal serves as an example for how to create your own custom ngrok agents
+using the ngrok SDKs. There are 3 major components
 
-## Available Scripts
+## backend
 
-In the project directory, you can run:
+The backend is an api service for defining and manipulating agent instances and
+their configuration. It requires a connection to a mongodb instance and will
+bind to a port on localhost requiring no authentication.  Steps to start it:
 
-### `npm start`
+```
+cd backend
+npm install
+npm run startmongo
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+cat << EOF >> .env
+NODE_ENV=development
+DATABASE=mongodb://127.0.0.1:27017/portal?retryWrites=true&w=majority
+PORT=8000
+EOF
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+npm run start
+```
 
-### `npm test`
+## frontend
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+The frontend is a react application that talks to the backend api. It assumes
+the backend api URL is http://localhost:8000 to match the above config, but
+if you want to run the backend on a different port or have it proxied through
+an ngrok endpoint, just change the baseURL parameter in
+```frontend/src/utils/axios.js```
 
-### `npm run build`
+Steps to start it:
+```
+cd frontend
+npm install
+npm run start
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+When you create a new agent definition, that agent will be auto-assigned a
+unique GUID to represent that agent. For each agent instance, The user is 
+responsible for giving the backend the following information. It is recommend
+that you create a separate ngrok bot user for each agent, and allocate 
+ngrok authtokens and api keys to that agent's bot user. You can also use the 
+actual bot user id as the agent token if you want to.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+| Field             | Description | Example Values |
+| :---------------- | :---------- | :---- |
+| Agent ID          | An auto-generated GUID uniquiely representing this agent (immutable) | 53d6584f-9823-46d3-b4c5-1d0c3801154f |
+| Agent Token       | A secret authentication token unique to this agent instance | bot_2ckSNXNt0jCAnKa0xBBBJUyjMsE |
+| Agent Address     | Agent API endpoint URL accessible to the backend for issuing agent commands | http://localhost:8001 |
+| Auth Token        | A valid ngrok authtoken | 2ckGMqwbYtWq2bNtwiuPrKX12Vg_6sLmax7Y9ZR23C5PGKpSR |
+| API Key           | A valid ngrok API key | 2ckSsZC9HkVZ7lsLKD1lfpdWkF8_4qy21MXtBreM2pt9Eme8F |
+| Agent YAML        | The top portion of a normal agent ngrok.yml file (excluding tunnel definitions) | version: "2"<br>server_addr: tunnel.us.connect.example.com:443<br>root_cas: host |
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Once the agent starts and comes online, the status indicator for the agent will
+change from red to green.
 
-### `npm run eject`
+In order to define endpoints for the agent click the tunnel icon and it will
+bring up the endpoint editor dialog. You will define one endpoint for each
+tunnel that you want the agent to start, and you need only supply an endpoint
+name and the endpoint yaml. For example:
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+| Endpoint Name     | Endpoint YAML  |
+| :---------------- | :---------- | 
+| webserver         | proto: http<br>addr: 8080<br>domain: website.example.com |
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+For each endpoint, there is a status indicator from the agent saying whether
+the endpoint is online or offline. If the endpoint is offline, you can press
+the play button to start the endpoint tunnel, and if it is online you can press
+the stop button to bring the tunnel down.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## agent-nodejs
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+The agent-nodejs is the agent code itself, written in nodejs and using the
+ngrok nodejs SDK. It itself presents an api service for the backend to send
+realtime configuration changes as well as commands to start and stop endpoint
+tunnels. It will bind to a port on localhost requiring no authentication. 
+Steps to start it:
 
-## Learn More
+```
+cd agent-nodejs
+npm install
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+cat << EOF >> .env
+NODE_ENV=development
+PORT=8001
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+BACKEND_URL=http://localhost:8000
+AGENT_ID=53d6584f-9823-46d3-b4c5-1d0c3801154f
+AGENT_TOKEN=bot_2ckSNXNt0jCAnKa0xBBBJUyjMsE
+EOF
 
-### Code Splitting
+npm run start
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
