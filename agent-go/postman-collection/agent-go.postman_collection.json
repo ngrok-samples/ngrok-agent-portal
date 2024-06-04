@@ -1,0 +1,193 @@
+{
+	"info": {
+		"_postman_id": "02948750-90eb-4d22-8e06-fe7a327acb1c",
+		"name": "agent-go",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "11614527"
+	},
+	"item": [
+		{
+			"name": "hello",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}",
+					"host": [
+						"{{baseUrl}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getEndPointStatus",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/getEndPointStatus/06de3c5a-b734-4a58-b84f-b9a5ded626m2",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"getEndPointStatus",
+						"06de3c5a-b734-4a58-b84f-b9a5ded626m2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "addEndpoint",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"createdOn\": \"2024-05-29T19:45:24.785Z\",\n  \"updatedOn\": \"2024-05-29T19:45:24.785Z\",\n  \"_id\": \"c516bc62-b6e4-42f1-8697-dcf773cfc132\",\n  \"name\": \"11\",\n  \"endpointYaml\": \"11\"\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/addEndpoint/",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"addEndpoint",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "updateStatus",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/updateStatus/06de3c5a-b734-4a58-b84f-b9a5ded626c9",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"updateStatus",
+						"06de3c5a-b734-4a58-b84f-b9a5ded626c9"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "deleteEndpoint",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/deleteEndpoint?id=0f656b2a-e45b-4d1a-b075-9b66c7bb2b86",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"deleteEndpoint"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "0f656b2a-e45b-4d1a-b075-9b66c7bb2b86"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getAllEndPoints",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/getAllEndPoints",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"getAllEndPoints"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					"// Getting from env and setting AGENT_ID and AGENT_TOKEN",
+					"const agentId = pm.environment.get(\"AGENT_ID\");",
+					"const agentToken = pm.environment.get(\"AGENT_TOKEN\");",
+					"",
+					"",
+					"// Add the AGENT_ID and AGENT_TOKEN to request headers",
+					"pm.request.headers.add({ key: \"AGENT_ID\", value: agentId });",
+					"pm.request.headers.add({ key: \"AGENT_TOKEN\", value: agentToken });",
+					"",
+					"// If you want to add them to the query parameters as well",
+					"let url = pm.request.url;",
+					"",
+					"// // Check and add AGENT_ID query parameter",
+					"// if (!url.getQueryString({ key: 'AGENT_ID' })) {",
+					"//     url.addQueryParams({ key: 'AGENT_ID', value: agentId });",
+					"// }",
+					"",
+					"// // Check and add AGENT_TOKEN query parameter",
+					"// if (!url.getQueryString({ key: 'AGENT_TOKEN' })) {",
+					"//     url.addQueryParams({ key: 'AGENT_TOKEN', value: agentToken });",
+					"// }",
+					"",
+					"pm.request.url = url;",
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

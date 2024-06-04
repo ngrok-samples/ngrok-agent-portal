@@ -33,7 +33,6 @@ import {
 } from "@mui/x-data-grid";
 import { v4 as uuidv4 } from "uuid";
 import axiosInstance from "../utils/axios";
-import axios from "axios";
 import jsYaml from "js-yaml";
 
 import EditTextarea from "./EditTextarea";
@@ -121,7 +120,9 @@ export default function FullFeaturedCrudGrid({ data, onUpdate }) {
         active: true,
         action: "agentStatus",
       });
-      const response = await axios.get(`${data?.agentAddress}`);
+      const response = await axiosInstance.get(
+        `/agent/checkAgentStatus/${data?.id}`
+      );
       if (response.data.success) {
         onUpdate({
           statusLoaded: true,
@@ -150,8 +151,8 @@ export default function FullFeaturedCrudGrid({ data, onUpdate }) {
 
   const getEndpointStatus = async () => {
     try {
-      const response = await axios.get(
-        `${data?.agentAddress}/getEndPointStatus/${data.id}`,
+      const response = await axiosInstance.get(
+        `/endpoint/getEndpointStatus/${data.id}`,
         {
           headers: {
             token: data.agentToken,
@@ -504,7 +505,12 @@ export default function FullFeaturedCrudGrid({ data, onUpdate }) {
 
     const updatedRow = response.data;
     const newRows = rows.map((row) =>
-      row.id === newRow.id ? updatedRow : row
+      row.id === newRow.id
+        ? {
+            ...row,
+            ...updatedRow,
+          }
+        : row
     );
     setRows(newRows);
     onUpdate({

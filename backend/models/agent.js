@@ -43,8 +43,7 @@ var AgentSchema = mongoose.Schema(
             validator.isURL(value, {
               protocols: ["http", "https", "ftp"],
               require_tld: false,
-
-              require_protocol: false,
+              require_protocol: true,
               allow_query_components: false,
             }) && !`${value}`.endsWith("/")
           );

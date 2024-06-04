@@ -9,6 +9,10 @@ router
   .post(agentEndpointController.createEndpoint);
 
 router
+  .route("/getEndpointStatus/:agentId")
+  .get(agentEndpointController.getEndpointStatus);
+
+router
   .route("/:agentId/:endpointId")
   .patch(agentEndpointController.updateEndpoint)
   .delete(agentEndpointController.deleteEndpoint);

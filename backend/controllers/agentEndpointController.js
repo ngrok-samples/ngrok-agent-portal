@@ -3,6 +3,32 @@ const AppError = require("../utils/appError");
 const Agent = require("../models/agent");
 const axios = require("axios");
 
+exports.getEndpointStatus = catchAsync(async (req, res, next) => {
+  let doc = await Agent.findById(req.params.agentId);
+  if (!doc) {
+    return next(new AppError("Requested Agent not found", 404));
+  }
+  try {
+    const response = await axios.get(
+      `${doc?.agentAddress}/getEndPointStatus/${doc._id}`,
+      {
+        headers: {
+          id: doc._id,
+          token: doc.agentToken,
+        },
+      }
+    );
+
+    if (response.data.success) {
+      res.status(200).json(response.data);
+    } else {
+      return next(new AppError("Agent is offline", 404));
+    }
+  } catch (err) {
+    console.log(err);
+    return next(new AppError("Agent is offline", 404));
+  }
+});
 //Get all agents endpoints
 exports.getAgentEndpoints = catchAsync(async (req, res, next) => {
   const doc = await Agent.findById(req.params.agentId);
@@ -37,6 +63,7 @@ exports.updateEndPointStatus = catchAsync(async (req, res, next) => {
       method: "Patch",
       url: `${doc.agentAddress}/updateStatus/${req.params.endpointId}`,
       headers: {
+        id: doc._id,
         token: doc.agentToken,
       },
     });
@@ -149,6 +176,7 @@ exports.createEndpoint = catchAsync(async (req, res, next) => {
       newEndPointDoc,
       {
         headers: {
+          id: doc._id,
           token: doc.agentToken,
         },
       }
@@ -189,6 +217,7 @@ exports.deleteEndpoint = catchAsync(async (req, res, next) => {
       method: "delete",
       url: `${doc.agentAddress}/deleteEndpoint/${req.params.endpointId}`,
       headers: {
+        id: doc._id,
         token: doc.agentToken,
       },
     });

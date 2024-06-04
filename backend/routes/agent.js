@@ -5,6 +5,8 @@ const router = express.Router();
 
 router.route("/").get(agentController.getAll).post(agentController.createOne);
 
+router.route("/checkAgentStatus/:id").get(agentController.checkAgentStatus);
+
 router
   .route("/:id")
   .get(agentController.getOne)

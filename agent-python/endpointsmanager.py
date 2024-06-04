@@ -37,23 +37,19 @@ async def changeEndpointsStatus(id):
             try:
                 endpointYaml = yaml.safe_load(endpoint.get("endpointYaml"))
                 logger.debug(f"Starting endpoint {endpoint.get('name')} with options: {endpointYaml}")
-                ngrok.forward(authtoken_from_env=True, proto="http", addr="localhost:8080", domain="jho.tunnels.ctindel-ngrok.com")
-                #listener:ngrok.Listener = await ngrok.forward(authtoken_from_env=True, proto="http", addr="localhost:8080", domain="jho.tunnels.ctindel-ngrok.com")
-                #print("-------",listener)
-                # listener = ngrok.forward(**{**{"authtoken_from_env": True}, **endpointYaml})
-                #logger.info(f"Ingress established for endpoint {endpoint.get('name')} at: {listener.url()}")
-                #listeners[id] = listener  # Store listener in the dictionary
-                #endpoint["listener_id"] = id
-                #endpoint["status"] = "online"
+                listener = await ngrok.forward(**{**{"authtoken_from_env": True}, **endpointYaml})
+                logger.info(f"Ingress established for endpoint {endpoint.get('name')} at: {listener.url()}")
+                listeners[id] = listener  # Store listener in the dictionary
+                endpoint["listener_id"] = id
+                endpoint["status"] = "online"
                 success = True
             except Exception as e:
                 logger.error(f"Listener setup error: {e}")
         else:
             logger.debug(f"Stopping endpoint {endpoint['name']}")
             try:
-                listeners[endpoint["listener_id"]].close()  # Close the listener
+                await listeners[endpoint["listener_id"]].close()  # Close the listener
                 del listeners[endpoint["listener_id"]]  # Remove listener from the dictionary
-                #endpoint["listener"].close()
                 logger.info(f"Ingress closed")
                 endpoint["listener_id"] = None
                 endpoint["status"] = "offline"
