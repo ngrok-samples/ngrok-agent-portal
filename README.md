@@ -118,3 +118,22 @@ EOF
 
 python server.py
 ```
+
+## agent-go
+
+Downlaod and install golang from [Site](https://go.dev/doc/install)
+
+Verify that you've installed Go by opening a command prompt and typing the following command:
+```sh
+$go version
+```
+Create .env file and set following environment variables
+```
+PORT=8080
+AGENT_ID=53d6584f-9823-46d3-b4c5-1d0c3801154f
+AGENT_TOKEN=bot_2ckSNXNt0jCAnKa0xBBBJUyjMsE
+```
+```sh
+cd agent-go
+go run .
+```
