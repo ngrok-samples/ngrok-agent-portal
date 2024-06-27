@@ -152,12 +152,7 @@ export default function FullFeaturedCrudGrid({ data, onUpdate }) {
   const getEndpointStatus = async () => {
     try {
       const response = await axiosInstance.get(
-        `/endpoint/getEndpointStatus/${data.id}`,
-        {
-          headers: {
-            token: data.agentToken,
-          },
-        }
+        `/endpoint/getEndpointStatus/${data.id}`
       );
       if (response.data.success) {
         const endpointsStatus = response.data.data.doc;

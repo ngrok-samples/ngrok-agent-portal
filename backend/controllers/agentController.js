@@ -13,8 +13,8 @@ exports.checkAgentStatus = catchAsync(async (req, res, next) => {
       method: "Get",
       url: `${doc.agentAddress}`,
       headers: {
-        id: doc._id,
-        token: doc.agentToken,
+        AGENT_ID: doc._id,
+        AGENT_TOKEN: doc.agentToken,
       },
     });
 

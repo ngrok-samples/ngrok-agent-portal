@@ -15,12 +15,16 @@ exports.getAgentStatus = catchAsync(async (req, res, next) => {
 //this will fetch all agent endpointsto maintain internal list
 exports.fetchAgentConfig = async () => {
   try {
-    logger.debug("fetching agent config from " + `${process.env.BACKEND_URL}/api/v1/endpoint/${process.env.AGENT_ID}`)
+    logger.debug(
+      "fetching agent config from " +
+        `${process.env.BACKEND_URL}/api/v1/endpoint/${process.env.AGENT_ID}`
+    );
     const response = await axios({
       method: "Get",
       url: `${process.env.BACKEND_URL}/api/v1/endpoint/${process.env.AGENT_ID}`,
       headers: {
-        token: process.env.AGENT_TOKEN,
+        AGENT_ID: process.env.AGENT_ID,
+        AGENT_TOKEN: process.env.AGENT_TOKEN,
       },
     });
 
@@ -56,15 +60,15 @@ exports.fetchAgentConfig = async () => {
 //this will change agent endpoint status
 exports.updateEndPointStatus = catchAsync(async (req, res, next) => {
   const id = req.params.endpointId;
-  const agentToken = req.headers.token;
-  if (agentToken !== process.env.AGENT_TOKEN) {
-    return next(new AppError("Agent endpoint not found", 404));
-  }
+  const authToken = req.body.authToken;
 
-  let endpointResponse = await endpointManager.changeEndpointsStatus(id);
+  let endpointResponse = await endpointManager.changeEndpointsStatus(
+    id,
+    authToken
+  );
 
   if (!endpointResponse.success) {
-    return next(new AppError("Agent endpoint not updated", 404));
+    return next(new AppError(endpointResponse.error, 422));
   }
 
   const newEndPointDoc = endpointResponse.data.find((x) => x._id === id);
@@ -78,15 +82,6 @@ exports.updateEndPointStatus = catchAsync(async (req, res, next) => {
 
 //This will give status of endpoints
 exports.getEndPointStatus = catchAsync(async (req, res, next) => {
-  const agentId = req.params.agentId;
-  const agentToken = req.headers.token;
-  if (
-    agentId !== process.env.AGENT_ID ||
-    agentToken !== process.env.AGENT_TOKEN
-  ) {
-    return next(new AppError("Agent endpoint not found", 404));
-  }
-
   res.status(200).json({
     success: true,
     data: {
@@ -96,11 +91,6 @@ exports.getEndPointStatus = catchAsync(async (req, res, next) => {
 });
 
 exports.addEndpoint = catchAsync(async (req, res, next) => {
-  const agentToken = req.headers.token;
-  if (agentToken !== process.env.AGENT_TOKEN) {
-    return next(new AppError("Agent endpoint not found", 404));
-  }
-
   let body = req.body;
   if (body._id) body.id = body._id;
   let endpointResponse = endpointManager.addEndpoint(body);
@@ -111,13 +101,27 @@ exports.addEndpoint = catchAsync(async (req, res, next) => {
     },
   });
 });
+
+exports.updateEndpoint = catchAsync(async (req, res, next) => {
+  const id = req.params.endpointId;
+  const endpoint = {
+    name: req.body.name,
+    endpointYaml: req.body.endpointYaml,
+  };
+  let endpointResponse = await endpointManager.updateEndpoint(id, endpoint);
+
+  res.status(200).json({
+    success: true,
+    data: {
+      doc: endpointResponse,
+    },
+  });
+});
+
 exports.deleteEndpoint = catchAsync(async (req, res, next) => {
   const id = req.params.endpointId;
-  const agentToken = req.headers.token;
-  if (agentToken !== process.env.AGENT_TOKEN) {
-    return next(new AppError("Agent endpoint not found", 404));
-  }
-  let endpointResponse = endpointManager.deleteEndpoint(id);
+
+  let endpointResponse = await endpointManager.deleteEndpoint(id);
 
   res.status(200).json({
     success: true,

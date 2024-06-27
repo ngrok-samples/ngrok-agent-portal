@@ -27,6 +27,7 @@ __pycache__
 .terraform
 .idea
 .venv
+.tool-versions
 TODO
 
 npm-debug.log*
